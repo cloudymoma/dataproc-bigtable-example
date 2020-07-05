@@ -24,32 +24,32 @@ import java.io.IOException;
  */
 public class App 
 {
-public static void main(String[] args) throws IOException {
-        String tableName = "test-bin";
-        SparkSession sc = SparkSession.builder().appName("test-bigtable").getOrCreate();
-        Configuration hbaseConf = BigtableConfiguration.configure("binguo-learning-centre", "binguo-test");
+	public static void main(String[] args) throws IOException {
+		String tableName = "test-bin";
+		SparkSession sc = SparkSession.builder().appName("test-bigtable").getOrCreate();
+		Configuration hbaseConf = BigtableConfiguration.configure("learning-centre", "test");
 
-        hbaseConf.set(TableInputFormat.INPUT_TABLE, tableName);
-        hbaseConf.set(TableInputFormat.SCAN_ROW_START, "104");
-        hbaseConf.set(TableInputFormat.SCAN_ROW_STOP,"105");
+		hbaseConf.set(TableInputFormat.INPUT_TABLE, tableName);
+		hbaseConf.set(TableInputFormat.SCAN_ROW_START, "104");
+		hbaseConf.set(TableInputFormat.SCAN_ROW_STOP,"105");
 
-        RDD<Tuple2<ImmutableBytesWritable, Result>> hBaseRDD = sc.sparkContext()
-                .newAPIHadoopRDD(hbaseConf, TableInputFormat.class, ImmutableBytesWritable.class, Result.class);
-        
-	System.out.println("Number of Records found : " + hBaseRDD.count());
-        /**
-	JavaRDD<Tuple2<ImmutableBytesWritable, Result>> hBaseJavaRdd = hBaseRDD.toJavaRDD();
-        hBaseJavaRdd.foreach(v1 -> {
-            //获取行键
-            String key = new String(v1._2.getRow());
-            //通过列族和列名获取列
-            String name = new String(v1._2.getValue("cf1".getBytes(), "name".getBytes()));
-            String type = new String(v1._2.getValue("cf1".getBytes(), "type".getBytes()));
-            System.out.println("Row key:" + key + "\tcf1.Name:" + name + "\tcf1.type:" + type);
-        });
-        */
+		RDD<Tuple2<ImmutableBytesWritable, Result>> hBaseRDD = sc.sparkContext()
+			.newAPIHadoopRDD(hbaseConf, TableInputFormat.class, ImmutableBytesWritable.class, Result.class);
 
-        sc.stop();
-    }
+		System.out.println("Number of Records found : " + hBaseRDD.count());
+		/**
+		  JavaRDD<Tuple2<ImmutableBytesWritable, Result>> hBaseJavaRdd = hBaseRDD.toJavaRDD();
+		  hBaseJavaRdd.foreach(v1 -> {
+		// get rowkey
+		String key = new String(v1._2.getRow());
+		// get cell value
+		String name = new String(v1._2.getValue("cf1".getBytes(), "name".getBytes()));
+		String type = new String(v1._2.getValue("cf1".getBytes(), "type".getBytes()));
+		System.out.println("Row key:" + key + "\tcf1.Name:" + name + "\tcf1.type:" + type);
+		});
+		*/
+
+		sc.stop();
+	}
 }
 
